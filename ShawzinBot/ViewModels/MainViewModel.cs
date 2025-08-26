@@ -59,7 +59,8 @@ namespace ShawzinBot.ViewModels
         private OutputDevice device;
         private ITimeSpan playTime = new MidiTimeSpan();
 
-        private Version _programVersion = Assembly.GetExecutingAssembly().GetName().Version;
+        //private Version _programVersion = Assembly.GetExecutingAssembly().GetName().Version;
+        private string _programVersion = "v2.2.2.6-VCMod.20250826";
         private string _versionString = "";
 
         #endregion
@@ -79,7 +80,7 @@ namespace ShawzinBot.ViewModels
 
         public MainViewModel()
         {
-            VersionString = _programVersion.ToString() + " VCMod 版";
+            VersionString = _programVersion.ToString();
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://api.github.com/repos/haseeex/ShawzinBot_VCMod/releases/latest");
             request.UserAgent = "request";
@@ -94,6 +95,10 @@ namespace ShawzinBot.ViewModels
                     if (!(p.draft || p.prerelease) && p.tag_name != _programVersion.ToString())
                     {
                         VersionString = _programVersion.ToString() + " - 更新可用!";
+                    }
+                    else 
+                    {
+                        VersionString = _programVersion.ToString() + " - 最新";
                     }
                 }
             }
@@ -142,7 +147,7 @@ namespace ShawzinBot.ViewModels
             get => _versionString;
             set
             {
-                _versionString = "v" + value;
+                _versionString = value;
                 NotifyOfPropertyChange(() => VersionString);
             }
         }

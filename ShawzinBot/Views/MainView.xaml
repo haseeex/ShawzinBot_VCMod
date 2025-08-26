@@ -439,11 +439,17 @@
             </Grid>
         </Grid>
 
-        <TextBlock
+        <Button
             Grid.Row="3"
             Grid.Column="1"
+            Height="auto"
+            Margin="5,5,5,0"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            Text="{Binding Path=VersionString}" />
+            Background="White"
+            Click="OpenGitUP_Click"
+            Content="{Binding Path=VersionString}"
+            FontSize="11"
+            Opacity="0.9" />
     </Grid>
 </Window>

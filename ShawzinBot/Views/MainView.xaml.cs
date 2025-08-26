@@ -1,7 +1,11 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Security.Policy;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Melanchall.DryWetMidi.Devices;
+using static System.Net.WebRequestMethods;
 
 namespace ShawzinBot.Views
 {
@@ -31,6 +35,15 @@ namespace ShawzinBot.Views
         public void OnMinimizeProgram(object sender, RoutedEventArgs e)
         {
             this.WindowState = WindowState.Minimized;
+        }
+
+        private void OpenGitUP_Click(object sender, RoutedEventArgs e)
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                var url = "https://github.com/haseeex/ShawzinBot_VCMod/releases";
+                Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
+            }
         }
     }
 }
