@@ -1,3 +1,17 @@
+# 修改内容
+
+1.重新布局UI和进行中文本地化
+
+2.修正默认音阶为 `五声小调`
+
+3.添加游戏切换,支持不同平台客户端
+
+4.修改远程更新Url为本仓库
+
+![ShawzinBot Overview](https://github.com/haseeex/ShawzinBot_VCMod/blob/master/ShawzinBot/Resources/VCMod.png)
+
+# 以下为原版描述
+
 ![ShawzinBot Logo](https://github.com/ianespana/ShawzinBot/blob/master/ShawzinBot/Resources/Shawzin.png)
 
 ShawzinBot is a program which converts a MIDI input or file to a series of key presses for the Shawzin. Any MIDI input works with this script (a MIDI keyboard, a virtual MIDI channel, etc), as well as [Standard MIDI Files (SMF)](https://www.midi.org/specifications/category/smf-specifications).
