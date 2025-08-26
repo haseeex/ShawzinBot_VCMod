@@ -120,6 +120,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Models\GameInfoModel.cs" />
     <Compile Include="Models\MidiSpeedModel.cs" />
     <Compile Include="Models\GitVersion.cs" />
     <Compile Include="Models\MidiTrackModel.cs" />

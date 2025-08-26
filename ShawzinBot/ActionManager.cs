@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Windows.Shapes;
 using Melanchall.DryWetMidi;
 using Melanchall.DryWetMidi.Core;
+using ShawzinBot.Models;
 using ShawzinBot.ViewModels;
 using Keyboard = InputManager.Keyboard;
 using Timer = System.Threading.Timer;
@@ -79,7 +80,7 @@ namespace ShawzinBot
 
         private static int scaleSize = 9;
 
-        public static int activeScale = 0;
+        public static int activeScale = 7;
 
         private static bool vibratoActive = false;
 
@@ -146,11 +147,11 @@ namespace ShawzinBot
         /// <param name="note"> The note to be played.</param>
         /// <param name="enableVibrato"> Should we use vibrato to play unplayable notes?.</param>
         /// <param name="transposeNotes"> Should we transpose unplayable notes?.</param>
-        public static bool PlayNote(NoteOnEvent note, bool enableVibrato, bool transposeNotes)
+        public static bool PlayNote(NoteOnEvent note, bool enableVibrato, bool transposeNotes, GameInfoModel gameInfo)
         {
             //var hWnd = GetForegroundWindow();
             //if (warframeWindow.Equals(IntPtr.Zero) || !hWnd.Equals(warframeWindow)) return false;
-            if (!IsWindowFocused("Warframe")) return false;
+            if (!IsWindowFocused(gameInfo.Value)) return false;
 
             var noteId = (int)note.NoteNumber;
             if (!shawzinNotes.ContainsKey(noteId))
@@ -279,13 +280,17 @@ namespace ShawzinBot
         //	Console.WriteLine(focusResult);
         //}
 
-        public static bool OnSongPlay()
+        public static bool OnSongPlay(GameInfoModel gameInfo)
         {
-            warframeWindow = FindWindow("Warframe");
+            warframeWindow = FindWindow(gameInfo.Value);
             //BringWindowToFront(warframeWindow);
             SwitchToThisWindow(warframeWindow, true);
             var hWnd = GetForegroundWindow();
-            if (warframeWindow.Equals(IntPtr.Zero) || !hWnd.Equals(warframeWindow)) return false;
+            if (warframeWindow.Equals(IntPtr.Zero) || !hWnd.Equals(warframeWindow)) 
+            {
+                System.Windows.MessageBox.Show($"找不到目标程序 {gameInfo.Name} [{gameInfo.Value}]\n请确实此程序是否在运行!");
+                return false;
+            }
             return true;
         }
 

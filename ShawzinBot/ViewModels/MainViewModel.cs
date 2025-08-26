@@ -13,6 +13,7 @@ using ShawzinBot.Models;
 using InputDevice = Melanchall.DryWetMidi.Devices.InputDevice;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using System.Configuration;
 
 namespace ShawzinBot.ViewModels
 {
@@ -26,7 +27,7 @@ namespace ShawzinBot.ViewModels
         private string _currentTime = "0:00";
         private string _totalTime = "0:00";
         private string _playPauseIcon = "Play";
-        private string _scale = "Scale: Chromatic";
+        private string _scale = "音阶: 五声小调";
         
         private BindableCollection<MidiInputModel> _midiInputs = new BindableCollection<MidiInputModel>();
         private BindableCollection<MidiTrackModel> _midiTracks = new BindableCollection<MidiTrackModel>();
@@ -40,15 +41,15 @@ namespace ShawzinBot.ViewModels
         private bool _ignoreSliderChange;
 
         private string[] ScaleArray = {
-            "Chromatic",
-            "Hexatonic",
-            "Major",
-            "Minor",
-            "Hirajoshi",
-            "Phrygian",
-            "Yo",
-            "Pentatonic Minor",
-            "Pentatonic Major"
+            "半音",
+            "六式音阶",
+            "大调",
+            "小调",
+            "平调子",
+            "弗里几亚属音",
+            "阳调式",
+            "五声小调",
+            "五声大调"
         };
 
         private System.Collections.Generic.IEnumerable<TrackChunk> midiTrackChunks;
@@ -78,9 +79,9 @@ namespace ShawzinBot.ViewModels
 
         public MainViewModel()
         {
-            VersionString = _programVersion.ToString();
+            VersionString = _programVersion.ToString() + " VCMod 版";
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://api.github.com/repos/ianespana/ShawzinBot/releases/latest");
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://api.github.com/repos/haseeex/ShawzinBot_VCMod/releases/latest");
             request.UserAgent = "request";
             try
             {
@@ -92,7 +93,7 @@ namespace ShawzinBot.ViewModels
                     GitVersion p = serializer.Deserialize<GitVersion>(reader);
                     if (!(p.draft || p.prerelease) && p.tag_name != _programVersion.ToString())
                     {
-                        VersionString = _programVersion.ToString() + " - Update available!";
+                        VersionString = _programVersion.ToString() + " - 更新可用!";
                     }
                 }
             }
@@ -101,7 +102,7 @@ namespace ShawzinBot.ViewModels
                 Console.WriteLine(ex);
             }
 
-            MidiInputs.Add(new MidiInputModel("None"));
+            MidiInputs.Add(new MidiInputModel("无"));
 
             foreach (var device in InputDevice.GetAll())
             {
@@ -113,11 +114,16 @@ namespace ShawzinBot.ViewModels
             MidiSpeeds.Add(new MidiSpeedModel("0.25", 0.25));
             MidiSpeeds.Add(new MidiSpeedModel("0.5", 0.5));
             MidiSpeeds.Add(new MidiSpeedModel("0.75", 0.75));
-            MidiSpeeds.Add(new MidiSpeedModel("Normal", 1));
+            MidiSpeeds.Add(new MidiSpeedModel("正常", 1));
             MidiSpeeds.Add(new MidiSpeedModel("1.25", 1.25));
             MidiSpeeds.Add(new MidiSpeedModel("1.5", 1.5));
             MidiSpeeds.Add(new MidiSpeedModel("1.75", 1.75));
             MidiSpeeds.Add(new MidiSpeedModel("2", 2));
+
+            this.GameInfos.Add(new GameInfoModel("国际服", "Warframe"));
+            this.GameInfos.Add(new GameInfoModel("国服", "星际战甲"));
+            this.GameInfos.Add(new GameInfoModel("单机", "Warframe [OpenWF]"));
+            this.SelectedGameInfo = this.GameInfos.LastOrDefault();
 
             SelectedMidiSpeed = MidiSpeeds[3];
 
@@ -232,12 +238,12 @@ namespace ShawzinBot.ViewModels
                 _selectedMidiInput = value;
                 inputDevice?.Dispose();
 
-                if (value?.DeviceName != null && value.DeviceName != "None")
+                if (value?.DeviceName != null && value.DeviceName != "无")
                 {
                     inputDevice = InputDevice.GetByName(value.DeviceName);
                     inputDevice.EventReceived += OnNoteEvent;
                     inputDevice.StartEventsListening();
-                    ActionManager.OnSongPlay();
+                    ActionManager.OnSongPlay(this.SelectedGameInfo);
                 }
 
                 NotifyOfPropertyChange(() => SelectedMidiInput);
@@ -266,6 +272,28 @@ namespace ShawzinBot.ViewModels
                 {
                     playback.Speed = value.Speed;
                 }
+            }
+        }
+
+        private BindableCollection<GameInfoModel> _GameInfos = new BindableCollection<GameInfoModel>();
+        public BindableCollection<GameInfoModel> GameInfos
+        {
+            get => _GameInfos;
+            set
+            {
+                _GameInfos = value;
+                NotifyOfPropertyChange(() => GameInfos);
+            }
+        }
+
+        private GameInfoModel _SelectedGameInfo;
+        public GameInfoModel SelectedGameInfo
+        {
+            get => _SelectedGameInfo;
+            set 
+            {
+                _SelectedGameInfo = value;
+                NotifyOfPropertyChange(() => SelectedGameInfo);
             }
         }
 
@@ -372,7 +400,7 @@ namespace ShawzinBot.ViewModels
 
                 foreach (TrackChunk track in midiFile.GetTrackChunks())
                 {
-                    MidiTracks.Add(new MidiTrackModel(track));
+                    MidiTracks.Add(new MidiTrackModel(track, true));
                 }
             }
             else
@@ -460,9 +488,10 @@ namespace ShawzinBot.ViewModels
             }
             else
             {
-                PlayPauseIcon = "Pause";                
+                var result = ActionManager.OnSongPlay(this.SelectedGameInfo);
+                if (!result) return;
 
-                ActionManager.OnSongPlay();
+                PlayPauseIcon = "Pause";
                 playTimer = new Timer();
                 playTimer.Interval = 100;
                 playTimer.Elapsed += new ElapsedEventHandler(PlayTimerElapsed);
@@ -472,7 +501,7 @@ namespace ShawzinBot.ViewModels
 
         private void PlayTimerElapsed(object sender, ElapsedEventArgs e)
         {
-            if (ActionManager.IsWindowFocused("Warframe") || PlayThroughSpeakers)
+            if (ActionManager.IsWindowFocused(this.SelectedGameInfo.Value) || PlayThroughSpeakers)
             {
                 playback.Start();
                 playTimer.Dispose();
@@ -497,7 +526,7 @@ namespace ShawzinBot.ViewModels
         public void RefreshDevices()
         {
             MidiInputs.Clear();
-            MidiInputs.Add(new MidiInputModel("None"));
+            MidiInputs.Add(new MidiInputModel("无"));
 
             foreach (var device in InputDevice.GetAll())
             {
@@ -509,7 +538,7 @@ namespace ShawzinBot.ViewModels
 
         public void UpdateScale(int scaleIndex) 
         {
-            Scale = "Scale: " + ScaleArray[scaleIndex];
+            Scale = "音阶: " + ScaleArray[scaleIndex];
         }
 
         #endregion
@@ -540,7 +569,7 @@ namespace ShawzinBot.ViewModels
                     if (note != null && note.Velocity <= 0) return;
 
                     //Check if the user has tabbed out of warframe, and stop playback to avoid Scale issues
-                    if (!(ActionManager.PlayNote(note, EnableVibrato, TransposeNotes) || PlayThroughSpeakers)) PlayPause();
+                    if (!(ActionManager.PlayNote(note, EnableVibrato, TransposeNotes, this.SelectedGameInfo) || PlayThroughSpeakers)) PlayPause();
                     UpdateScale(ActionManager.activeScale);
                     return;
                 default:
@@ -555,7 +584,7 @@ namespace ShawzinBot.ViewModels
             var note = e.Event as NoteOnEvent;
             if (note != null && note.Velocity <= 0) return;
 
-            ActionManager.PlayNote(note, EnableVibrato, TransposeNotes);
+            ActionManager.PlayNote(note, EnableVibrato, TransposeNotes,this.SelectedGameInfo);
         }
 
         private void UpdateSlider(double value)
