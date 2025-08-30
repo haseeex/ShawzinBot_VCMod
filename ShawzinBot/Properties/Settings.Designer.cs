@@ -70,5 +70,17 @@ namespace ShawzinBot.Properties {
                 this["SelectedGameInfo"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("vancat")]
+        public string DiyGameInfo {
+            get {
+                return ((string)(this["DiyGameInfo"]));
+            }
+            set {
+                this["DiyGameInfo"] = value;
+            }
+        }
     }
 }

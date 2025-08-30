@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Timers;
+using System.Windows;
 using System.Windows.Input;
 using Caliburn.Micro;
 using Melanchall.DryWetMidi.Core;
@@ -61,7 +62,7 @@ namespace ShawzinBot.ViewModels
         private ITimeSpan playTime = new MidiTimeSpan();
 
         //private Version _programVersion = Assembly.GetExecutingAssembly().GetName().Version;
-        private string _programVersion = "v2.2.2.6-VCMod.20250826";
+        private string _programVersion = "v2.2.2.6-VCMod.20250830";
         private string _versionString = "";
 
         #endregion
@@ -126,9 +127,12 @@ namespace ShawzinBot.ViewModels
             MidiSpeeds.Add(new MidiSpeedModel("1.75", 1.75));
             MidiSpeeds.Add(new MidiSpeedModel("2", 2));
 
-            this.GameInfos.Add(new GameInfoModel("国际服", "Warframe"));
-            this.GameInfos.Add(new GameInfoModel("国服", "星际战甲"));
-            this.GameInfos.Add(new GameInfoModel("单机", "Warframe [OpenWF]"));
+            this.GameInfos.Add(new GameInfoModel("warframe", "Warframe"));
+            this.GameInfos.Add(new GameInfoModel("星际战甲", "星际战甲"));
+            this.GameInfos.Add(new GameInfoModel("单机版", "Warframe [OpenWF]"));
+            this.GameInfos.Add(new GameInfoModel("自定义", this.DiyGameInfo));
+
+            this.DiyGameInfo = Properties.Settings.Default.DiyGameInfo;
             this.SelectedGameInfo = this.GameInfos[Properties.Settings.Default.SelectedGameInfo];
 
             SelectedMidiSpeed = MidiSpeeds[3];
@@ -302,6 +306,20 @@ namespace ShawzinBot.ViewModels
                 Properties.Settings.Default.SelectedGameInfo = this.GameInfos.IndexOf(value);
                 Properties.Settings.Default.Save();
                 NotifyOfPropertyChange(() => SelectedGameInfo);
+            }
+        }
+
+        private string _DiyGameInfo;
+        public string DiyGameInfo 
+        {
+            get => _DiyGameInfo;
+            set
+            {
+                _DiyGameInfo = value;
+                Properties.Settings.Default.DiyGameInfo = value;
+                Properties.Settings.Default.Save();
+                this.GameInfos[3].Value = this.DiyGameInfo;
+                NotifyOfPropertyChange(() => DiyGameInfo);
             }
         }
 
@@ -600,6 +618,62 @@ namespace ShawzinBot.ViewModels
             SongSlider = value;
         }
 
+        #endregion
+
+        #region 手动修正当前音阶
+        public void CH_半音()
+        {
+            this.Scale = EnumsModel.Enum_Scale.半音;
+            ActionManager.activeScale = (int)this.Scale;
+        }
+
+        public void CH_六式音阶()
+        {
+            this.Scale = EnumsModel.Enum_Scale.六式音阶;
+            ActionManager.activeScale = (int)this.Scale;
+        }
+
+        public void CH_大调()
+        {
+            this.Scale = EnumsModel.Enum_Scale.大调;
+            ActionManager.activeScale = (int)this.Scale;
+        }
+
+        public void CH_小调()
+        {
+            this.Scale = EnumsModel.Enum_Scale.小调;
+            ActionManager.activeScale = (int)this.Scale;
+        }
+
+        public void CH_平调子()
+        {
+            this.Scale = EnumsModel.Enum_Scale.平调子;
+            ActionManager.activeScale = (int)this.Scale;
+        }
+
+        public void CH_弗里几亚属音()
+        {
+            this.Scale = EnumsModel.Enum_Scale.弗里几亚属音;
+            ActionManager.activeScale = (int)this.Scale;
+        }
+
+        public void CH_阳调式()
+        {
+            this.Scale = EnumsModel.Enum_Scale.阳调式;
+            ActionManager.activeScale = (int)this.Scale;
+        }
+
+        public void CH_五声小调()
+        {
+            this.Scale = EnumsModel.Enum_Scale.五声小调;
+            ActionManager.activeScale = (int)this.Scale;
+        }
+
+        public void CH_五声大调()
+        {
+            this.Scale = EnumsModel.Enum_Scale.五声大调;
+            ActionManager.activeScale = (int)this.Scale;
+        } 
         #endregion
     }
 }

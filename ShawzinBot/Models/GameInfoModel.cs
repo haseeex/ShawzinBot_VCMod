@@ -8,9 +8,9 @@ namespace ShawzinBot.Models
 {
     public class GameInfoModel
     {
-        public string Name { get; private set; }
+        public string Name { get;  set; }
 
-        public string Value { get; private set; }
+        public string Value { get;  set; }
 
         public GameInfoModel(string name, string value)
         {

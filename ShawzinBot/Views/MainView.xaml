@@ -131,6 +131,7 @@
                     <RowDefinition Height="*" />
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
 
                 <TextBlock
@@ -145,8 +146,8 @@
 
                 <Ellipse
                     Grid.Row="1"
-                    Width="250"
-                    Height="250"
+                    Width="150"
+                    Height="150"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     StrokeThickness="1">
@@ -283,6 +284,76 @@
                         </Button>
                     </Grid>
                 </Grid>
+
+                <UniformGrid Grid.Row="4" Margin="0,10,0,0">
+                    <Button
+                        x:Name="CH_半音"
+                        Margin="2"
+                        Background="#FF00FF"
+                        BorderThickness="0"
+                        Content="半音"
+                        FontSize="10"
+                        Foreground="White" />
+                    <Button
+                        x:Name="CH_六式音阶"
+                        Margin="2"
+                        Background="#FFFF00"
+                        BorderThickness="0"
+                        Content="六式音阶"
+                        FontSize="10" />
+                    <Button
+                        x:Name="CH_大调"
+                        Margin="2"
+                        Background="#00FF00"
+                        BorderThickness="0"
+                        Content="大调"
+                        FontSize="10" />
+                    <Button
+                        x:Name="CH_小调"
+                        Margin="2"
+                        Background="#00FFFF"
+                        BorderThickness="0"
+                        Content="小调"
+                        FontSize="10" />
+                    <Button
+                        x:Name="CH_平调子"
+                        Margin="2"
+                        Background="#0000FF"
+                        BorderThickness="0"
+                        Content="平调子"
+                        FontSize="10"
+                        Foreground="White" />
+                    <Button
+                        x:Name="CH_弗里几亚属音"
+                        Margin="2"
+                        Background="#FF00FF"
+                        BorderThickness="0"
+                        Content="弗里几亚属音"
+                        FontSize="10"
+                        Foreground="White" />
+                    <Button
+                        x:Name="CH_阳调式"
+                        Margin="2"
+                        Background="#0000FF"
+                        BorderThickness="0"
+                        Content="阳调式"
+                        FontSize="10"
+                        Foreground="White" />
+                    <Button
+                        x:Name="CH_五声小调"
+                        Margin="2"
+                        Background="#00FFFF"
+                        BorderThickness="0"
+                        Content="五声小调"
+                        FontSize="10" />
+                    <Button
+                        x:Name="CH_五声大调"
+                        Margin="2"
+                        Background="#00FF00"
+                        BorderThickness="0"
+                        Content="五声大调"
+                        FontSize="10" />
+                </UniformGrid>
             </Grid>
 
             <Grid Grid.Column="1">
@@ -420,10 +491,10 @@
                             <TextBlock
                                 Margin="5"
                                 VerticalAlignment="Center"
-                                Text="游戏:" />
+                                Text="目标程序:" />
                             <ComboBox
                                 x:Name="GameInfo"
-                                Width="210"
+                                Width="180"
                                 Margin="20,5,5,5"
                                 Padding="5"
                                 HorizontalAlignment="Left"
@@ -432,6 +503,20 @@
                                 DisplayMemberPath="Name"
                                 ItemsSource="{Binding Path=GameInfos, Mode=TwoWay}"
                                 SelectedItem="{Binding Path=SelectedGameInfo, Mode=TwoWay}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock
+                                Margin="5"
+                                VerticalAlignment="Center"
+                                Text="自定义:" />
+                            <TextBox
+                                Width="195"
+                                Height="25"
+                                Margin="20,5,5,5"
+                                Padding="2,0,2,0"
+                                Background="#FF444444"
+                                Text="{Binding Path=DiyGameInfo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                ToolTip="游戏为自定义时,此处填入你的游戏程序名" />
                         </StackPanel>
                     </StackPanel>
 

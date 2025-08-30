@@ -14,5 +14,8 @@
     <Setting Name="SelectedGameInfo" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">2</Value>
     </Setting>
+    <Setting Name="DiyGameInfo" Type="System.String" Scope="User">
+      <Value Profile="(Default)">vancat</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
