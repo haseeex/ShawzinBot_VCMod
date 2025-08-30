@@ -80,7 +80,7 @@ namespace ShawzinBot
 
         private static int scaleSize = 9;
 
-        public static int activeScale = 7;
+        public static int activeScale = (int)EnumsModel.Enum_Scale.五声小调;
 
         private static bool vibratoActive = false;
 

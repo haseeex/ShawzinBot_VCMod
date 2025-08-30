@@ -1,19 +1,20 @@
 ﻿using System;
+using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Timers;
-using System.Net;
+using System.Windows.Input;
 using Caliburn.Micro;
 using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Devices;
 using Melanchall.DryWetMidi.Interaction;
 using Microsoft.Win32;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using ShawzinBot.Models;
 using InputDevice = Melanchall.DryWetMidi.Devices.InputDevice;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using System.Configuration;
 
 namespace ShawzinBot.ViewModels
 {
@@ -27,7 +28,7 @@ namespace ShawzinBot.ViewModels
         private string _currentTime = "0:00";
         private string _totalTime = "0:00";
         private string _playPauseIcon = "Play";
-        private string _scale = "音阶: 五声小调";
+        private EnumsModel.Enum_Scale _scale = EnumsModel.Enum_Scale.五声小调;
         
         private BindableCollection<MidiInputModel> _midiInputs = new BindableCollection<MidiInputModel>();
         private BindableCollection<MidiTrackModel> _midiTracks = new BindableCollection<MidiTrackModel>();
@@ -40,17 +41,17 @@ namespace ShawzinBot.ViewModels
         private bool _playThroughSpeakers;
         private bool _ignoreSliderChange;
 
-        private string[] ScaleArray = {
-            "半音",
-            "六式音阶",
-            "大调",
-            "小调",
-            "平调子",
-            "弗里几亚属音",
-            "阳调式",
-            "五声小调",
-            "五声大调"
-        };
+        //private string[] ScaleArray = {
+        //    "半音",
+        //    "六式音阶",
+        //    "大调",
+        //    "小调",
+        //    "平调子",
+        //    "弗里几亚属音",
+        //    "阳调式",
+        //    "五声小调",
+        //    "五声大调"
+        //};
 
         private System.Collections.Generic.IEnumerable<TrackChunk> midiTrackChunks;
         private TrackChunk firstTrack;
@@ -128,7 +129,7 @@ namespace ShawzinBot.ViewModels
             this.GameInfos.Add(new GameInfoModel("国际服", "Warframe"));
             this.GameInfos.Add(new GameInfoModel("国服", "星际战甲"));
             this.GameInfos.Add(new GameInfoModel("单机", "Warframe [OpenWF]"));
-            this.SelectedGameInfo = this.GameInfos.LastOrDefault();
+            this.SelectedGameInfo = this.GameInfos[Properties.Settings.Default.SelectedGameInfo];
 
             SelectedMidiSpeed = MidiSpeeds[3];
 
@@ -298,6 +299,8 @@ namespace ShawzinBot.ViewModels
             set 
             {
                 _SelectedGameInfo = value;
+                Properties.Settings.Default.SelectedGameInfo = this.GameInfos.IndexOf(value);
+                Properties.Settings.Default.Save();
                 NotifyOfPropertyChange(() => SelectedGameInfo);
             }
         }
@@ -362,7 +365,7 @@ namespace ShawzinBot.ViewModels
             }
         }
 
-        public string Scale
+        public EnumsModel.Enum_Scale Scale
         {
             get => _scale;
             set
@@ -495,7 +498,6 @@ namespace ShawzinBot.ViewModels
             {
                 var result = ActionManager.OnSongPlay(this.SelectedGameInfo);
                 if (!result) return;
-
                 PlayPauseIcon = "Pause";
                 playTimer = new Timer();
                 playTimer.Interval = 100;
@@ -543,7 +545,7 @@ namespace ShawzinBot.ViewModels
 
         public void UpdateScale(int scaleIndex) 
         {
-            Scale = "音阶: " + ScaleArray[scaleIndex];
+            Scale = (EnumsModel.Enum_Scale)scaleIndex;
         }
 
         #endregion
